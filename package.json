@@ -1,10 +1,10 @@
 {
-  "name": "create-express-backend",
+  "name": "@ankesh/create-express-backend",
   "version": "1.0.0",
   "description": "CLI to scaffold production-ready Express + Socket.io + MongoDB backend",
   "main": "index.js",
   "bin": {
-    "create-express-backend": "./index.js"
+    "create-express-backend": "index.js"
   },
   "type": "commonjs",
   "files": [
@@ -24,7 +24,8 @@
   "author": "Your Name / @yourusername",
   "license": "MIT",
   "dependencies": {
+    "chalk": "^4.1.2",
     "fs-extra": "^11.3.3",
-    "chalk": "^4.1.2"         
+    "shelljs": "^0.10.0"
   }
 }
