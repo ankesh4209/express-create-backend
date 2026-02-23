@@ -138,7 +138,6 @@ async function main() {
 
     console.log(chalk.green.bold("\nSuccess! Your backend is ready 🚀\n"));
     console.log(`  ${chalk.cyan("cd")} ${folderName}`);
-    console.log(`  ${chalk.cyan("npm run dev")}`);
     console.log(`  ${chalk.cyan("npm start")}\n`);
 
     return safeExit(0);
