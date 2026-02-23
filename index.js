@@ -16,12 +16,12 @@ if (args.length === 0 || args.includes("--help") || args.includes("-h")) {
   console.log(
     chalk.cyan(`
 Usage:
-  npx create-express-backend <project-name>
-  npx create-express-backend@latest my-api
+  npx express-create-backend <project-name>
+  npx express-create-backend@latest my-api
  
 Examples:
-  npx create-express-backend my-backend
-  npx create-express-backend api-v2
+  npx express-create-backend my-backend
+  npx express-create-backend api-v2
 
 Options:
   --help, -h     Show this help message
@@ -34,7 +34,7 @@ const folderName = args[0].trim();
 
 if (!folderName || folderName === ".") {
   console.error(chalk.red("Error: Please provide a valid project name"));
-  console.log(chalk.yellow("Example: npx create-express-backend my-app"));
+  console.log(chalk.yellow("Example: npx express-create-backend my-app"));
   process.exit(1);
 }
 

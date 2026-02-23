@@ -1,20 +1,27 @@
-Here is a clean, well-structured, and modern README.md file tailored for your create-express-backend CLI/generator project (the one that scaffolds a production-ready Express + Socket.io + MongoDB + JWT backend).
+Here is a clean, well-structured, and modern README.md file tailored for your express-create-backend CLI/generator project (the one that scaffolds a production-ready Express + Socket.io + MongoDB + JWT backend).
 You can copy-paste this directly into your README.md file at the root of your generator project.
-Markdown# create-express-backend
+Markdown# express-create-backend
 
 **Scaffold a clean, modern, production-ready Express.js backend in seconds**  
 with authentication, custom errors, logging, MongoDB, Socket.io support, and good security defaults.
 
 # Recommended (global install or via npx)
+
 # Recommended (via npx)
-npx create-express-backend@latest my-app
-npx create-express-backend my-app
+
+npx express-create-backend@latest my-app
+npx express-create-backend my-app
+
 # Or if installed globally
-create-express-backend my-app
+
+express-create-backend my-app
 
 # Or if running locally from your project folder
+
 node . my-app
+
 # or
+
 node index.js my-app
 ✨ Features
 
@@ -33,27 +40,27 @@ Generated Project Structure
 After running the command, you get:
 my-app/
 ├── config/
-│   ├── database.js
-│   ├── env.js
-│   └── logger.js
+│ ├── database.js
+│ ├── env.js
+│ └── logger.js
 ├── controllers/
-│   └── users.controller.js
+│ └── users.controller.js
 ├── routes/
-│   └── users.routes.js
+│ └── users.routes.js
 ├── services/
-│   └── users.service.js
+│ └── users.service.js
 ├── models/
-│   └── user.model.js
+│ └── user.model.js
 ├── middlewares/
-│   ├── auth.middleware.js
-│   ├── error.middleware.js
-│   └── logger.middleware.js
+│ ├── auth.middleware.js
+│ ├── error.middleware.js
+│ └── logger.middleware.js
 ├── utils/
-│   └── jwt.util.js
+│ └── jwt.util.js
 ├── errors/
-│   ├── BaseError.js
-│   ├── BadRequestError.js
-│   └── NotFoundError.js
+│ ├── BaseError.js
+│ ├── BadRequestError.js
+│ └── NotFoundError.js
 ├── .env
 ├── .env.example
 ├── .gitignore
@@ -62,34 +69,40 @@ my-app/
 └── README.md
 🚀 Quick Start
 Bash# 1. Generate new backend
-npx create-express-backend@latest my-app
+npx express-create-backend@latest my-app
 
 # 2. Enter the folder
+
 cd my-app
 
 # 3. Review & customize .env (especially JWT_SECRET and MONGO_URI)
-#    (MongoDB Atlas or local MongoDB recommended)
+
+# (MongoDB Atlas or local MongoDB recommended)
 
 # 4. Install dependencies (already done by generator, but just in case)
+
 npm install
 
 # 5. Start development server
+
 npm run dev
-  # or production mode:
+
+# or production mode:
+
 npm start
 → Open http://localhost:5000
 You should see:
 JSON{ "message": "Backend Running 🚀" }
 📋 Available Scripts
-Bashnpm start      Production mode (node server.js)
-npm run dev    Development mode with auto-reload (nodemon)
+Bashnpm start Production mode (node server.js)
+npm run dev Development mode with auto-reload (nodemon)
 🔑 Default API Endpoints
 
 MethodEndpointDescriptionAuth?POST/api/users/registerRegister + return JWT tokenNoPOST/api/users/loginLogin + return JWT tokenNoGET/api/users/meGet current authenticated userYes
 🔌 Socket.io (ready to use)
 Basic message broadcasting is already included in server.js:
 JavaScriptsocket.on("message", (msg) => {
-  io.emit("message", msg);   // broadcast to everyone
+io.emit("message", msg); // broadcast to everyone
 });
 You can easily extend it (chat rooms, typing indicators, private messages, etc.).
 🔐 Security Defaults
