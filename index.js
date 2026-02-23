@@ -27,6 +27,7 @@ Options:
 }
 
 const folderName = args[0].trim();
+
 if (!folderName || folderName === ".") {
   console.error(chalk.red("Error: Please provide a valid project name"));
   console.log(chalk.yellow("Example: npx create-express-backend my-app"));
@@ -47,7 +48,33 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-async function askQuestion(query) {
+/* ===============================
+   SAFE EXIT HANDLER (IMPORTANT)
+================================= */
+
+let isExiting = false;
+
+function safeExit(code = 0) {
+  if (isExiting) return;
+  isExiting = true;
+
+  try {
+    rl.close();
+  } catch (e) {}
+
+  process.exit(code);
+}
+
+process.on("SIGINT", () => {
+  console.log(chalk.red("\nCancelled by user"));
+  safeExit(0);
+});
+
+/* ===============================
+   ASK QUESTION
+================================= */
+
+function askQuestion(query) {
   return new Promise((resolve) => {
     rl.question(query, (answer) => {
       resolve(answer.trim().toLowerCase());
@@ -55,16 +82,12 @@ async function askQuestion(query) {
   });
 }
 
-// Optional Ctrl+C safe exit (does NOT break exit logic)
-process.on("SIGINT", () => {
-  console.log(chalk.red("\nCancelled by user"));
-  rl.close();
-  process.exit(0);
-});
+/* ===============================
+   MAIN LOGIC
+================================= */
 
 async function main() {
   try {
-    // Check if folder exists
     if (await fs.pathExists(targetPath)) {
       console.log(
         chalk.yellow(`Directory ${chalk.bold(folderName)} already exists.`),
@@ -76,15 +99,14 @@ async function main() {
 
       if (answer !== "y" && answer !== "yes") {
         console.log(chalk.red("Operation cancelled."));
-        rl.close();
-        process.exit(0);
+        safeExit(0);
+        return;
       }
 
       console.log(chalk.yellow("Removing existing directory..."));
       await fs.remove(targetPath);
     }
 
-    // Create project folder
     await fs.ensureDir(targetPath);
     console.log(chalk.green("✓ Project folder created"));
 
@@ -131,8 +153,7 @@ async function main() {
 MONGO_URI=mongodb://localhost:27017/${folderName}
 JWT_SECRET=your_jwt_secret_key
 `,
-      ".env.example": `# Copy this to .env and fill values
-PORT=5000
+      ".env.example": `PORT=5000
 MONGO_URI=mongodb://localhost:27017/${folderName}
 JWT_SECRET=your_jwt_secret_key
 `,
@@ -184,14 +205,11 @@ Production-ready Express backend.
 
 ## Start
 
-\`\`\`bash
 npm install
 npm run dev
-\`\`\`
 `,
     };
 
-    // Create files
     for (const file of structure) {
       const fullPath = path.join(targetPath, file);
       await fs.ensureDir(path.dirname(fullPath));
@@ -207,7 +225,6 @@ npm run dev
 
     console.log(chalk.green("✓ All files and folders created"));
 
-    // SAFE INSTALL (cross-platform fix)
     console.log(chalk.yellow("\nInstalling dependencies..."));
 
     const installCmd =
@@ -227,21 +244,18 @@ npm run dev
     });
 
     console.log(chalk.green.bold("\nSuccess! Your backend is ready 🚀\n"));
-
     console.log(`  ${chalk.cyan("cd")} ${folderName}`);
     console.log(`  ${chalk.cyan("npm run dev")}`);
     console.log(`  ${chalk.cyan("npm start")}\n`);
 
-    rl.close();
-    process.exit(0);
+    safeExit(0);
   } catch (err) {
     console.error(chalk.red("\nError occurred:"), err.message);
-    rl.close();
-    process.exit(1);
+    safeExit(1);
   }
 }
 
 main().catch((err) => {
   console.error(chalk.red("Unexpected error:"), err);
-  process.exit(1);
+  safeExit(1);
 });
