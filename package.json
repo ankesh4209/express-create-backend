@@ -1,7 +1,7 @@
 {
-  "name": "@ankesh/create-express-backend",
+  "name": "@ankesh4209/create-express-backend",
   "version": "1.0.0",
-  "description": "CLI to scaffold production-ready Express + Socket.io + MongoDB backend",
+  "description": "CLI to scaffold production-ready Express backend",
   "main": "index.js",
   "bin": {
     "create-express-backend": "index.js"
@@ -10,22 +10,17 @@
   "files": [
     "index.js"
   ],
-  "scripts": {
-    "test": "echo \"No tests yet\""
-  },
   "keywords": [
     "express",
-    "backend",
     "cli",
     "generator",
-    "scaffold",
     "npx"
   ],
-  "author": "Your Name / @yourusername",
+  "author": "Ankesh Daheriya",
   "license": "MIT",
   "dependencies": {
+    "@ankesh4209/create-express-backend": "^1.0.0",
     "chalk": "^4.1.2",
-    "fs-extra": "^11.3.3",
-    "shelljs": "^0.10.0"
-  }
+    "fs-extra": "^11.3.3"
+  } 
 }

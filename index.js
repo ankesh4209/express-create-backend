@@ -4,9 +4,7 @@ const fs = require("fs-extra");
 const path = require("path");
 const { exec } = require("child_process");
 const readline = require("readline");
-
-const chalk = require("chalk"); // optional but highly recommended for better UX
-// If you don't want chalk, remove it and replace chalk calls with plain console.log
+const chalk = require("chalk");
 
 const args = process.argv.slice(2);
 
@@ -23,7 +21,7 @@ Examples:
 
 Options:
   --help, -h     Show this help message
-  `),
+`),
   );
   process.exit(0);
 }
@@ -57,9 +55,16 @@ async function askQuestion(query) {
   });
 }
 
+// Optional Ctrl+C safe exit (does NOT break exit logic)
+process.on("SIGINT", () => {
+  console.log(chalk.red("\nCancelled by user"));
+  rl.close();
+  process.exit(0);
+});
+
 async function main() {
   try {
-    // 1. Check if folder already exists
+    // Check if folder exists
     if (await fs.pathExists(targetPath)) {
       console.log(
         chalk.yellow(`Directory ${chalk.bold(folderName)} already exists.`),
@@ -79,12 +84,10 @@ async function main() {
       await fs.remove(targetPath);
     }
 
-    // 2. Create root directory
+    // Create project folder
     await fs.ensureDir(targetPath);
     console.log(chalk.green("✓ Project folder created"));
 
-    // ────────────────────────────────────────────────
-    // Your original structure (no bin/)
     const structure = [
       "config/database.js",
       "config/env.js",
@@ -108,8 +111,6 @@ async function main() {
       "README.md",
     ];
 
-    // ────────────────────────────────────────────────
-    // Your package.json template
     const packageJsonContent = {
       name: folderName,
       version: "1.0.0",
@@ -125,8 +126,6 @@ async function main() {
       license: "ISC",
     };
 
-    // ────────────────────────────────────────────────
-    // Your pre-filled file contents
     const fileContents = {
       ".env": `PORT=5000
 MONGO_URI=mongodb://localhost:27017/${folderName}
@@ -157,24 +156,19 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-// Connect to DB
 connectDB();
 
-// Middleware
 app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(morgan("combined"));
 
-// Routes
 app.use("/api/users", usersRoutes);
 
 app.get("/", (req, res) => res.json({ message: "Backend Running 🚀" }));
 
-// Error handler
 app.use(errorHandler);
 
-// Socket.io
 io.on("connection", (socket) => {
   logger.info(\`Socket connected: \${socket.id}\`);
   socket.on("message", (msg) => io.emit("message", msg));
@@ -186,20 +180,18 @@ server.listen(PORT, () => logger.info(\`Server running on port \${PORT}\`));
 `,
       "README.md": `# ${folderName}
 
-Production-ready Express backend with Socket.io, logging, and error handling.
+Production-ready Express backend.
 
-## Quick Start
+## Start
 
 \`\`\`bash
 npm install
 npm run dev
 \`\`\`
-
-Open http://localhost:5000
 `,
     };
 
-    // 3. Create all files
+    // Create files
     for (const file of structure) {
       const fullPath = path.join(targetPath, file);
       await fs.ensureDir(path.dirname(fullPath));
@@ -209,29 +201,22 @@ Open http://localhost:5000
       } else if (file in fileContents) {
         await fs.writeFile(fullPath, fileContents[file], "utf8");
       } else {
-        await fs.writeFile(
-          fullPath,
-          "// TODO: Add production code here\n",
-          "utf8",
-        );
+        await fs.writeFile(fullPath, "// TODO: Add production code here\n");
       }
     }
 
     console.log(chalk.green("✓ All files and folders created"));
 
-    // 4. Install dependencies
-    console.log(
-      chalk.yellow(
-        "\nInstalling dependencies... (this may take 30–90 seconds)",
-      ),
-    );
-    const installCmd = `cd "${folderName}" && npm install express dotenv cors helmet morgan socket.io jsonwebtoken bcryptjs winston mongoose nodemon eslint --save`;
+    // SAFE INSTALL (cross-platform fix)
+    console.log(chalk.yellow("\nInstalling dependencies..."));
+
+    const installCmd =
+      "npm install express dotenv cors helmet morgan socket.io jsonwebtoken bcryptjs winston mongoose nodemon eslint --save";
 
     await new Promise((resolve, reject) => {
-      exec(installCmd, (err, stdout, stderr) => {
+      exec(installCmd, { cwd: targetPath }, (err, stdout, stderr) => {
         if (err) {
           console.error(chalk.red("npm install failed:"), err.message);
-          if (stderr) console.error(stderr);
           reject(err);
           return;
         }
@@ -241,27 +226,16 @@ Open http://localhost:5000
       });
     });
 
-    // ────────────────────────────────────────────────
-    // Final success message & exit
     console.log(chalk.green.bold("\nSuccess! Your backend is ready 🚀\n"));
 
     console.log(`  ${chalk.cyan("cd")} ${folderName}`);
-    console.log(
-      `  ${chalk.cyan("npm run dev")}     # start development server with nodemon`,
-    );
-    console.log(
-      `  ${chalk.cyan("npm start")}       # start production server\n`,
-    );
-
-    console.log(chalk.dim("Happy coding!\n"));
+    console.log(`  ${chalk.cyan("npm run dev")}`);
+    console.log(`  ${chalk.cyan("npm start")}\n`);
 
     rl.close();
     process.exit(0);
   } catch (err) {
     console.error(chalk.red("\nError occurred:"), err.message);
-    if (err.stack) {
-      console.error(chalk.dim(err.stack.split("\n").slice(1).join("\n")));
-    }
     rl.close();
     process.exit(1);
   }
