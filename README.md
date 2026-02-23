@@ -5,11 +5,10 @@ Markdown# create-express-backend
 **Scaffold a clean, modern, production-ready Express.js backend in seconds**  
 with authentication, custom errors, logging, MongoDB, Socket.io support, and good security defaults.
 
-```bash
 # Recommended (global install or via npx)
 # Recommended (via npx)
 npx create-express-backend@latest my-app
-
+npx create-express-backend my-app
 # Or if installed globally
 create-express-backend my-app
 
@@ -32,7 +31,7 @@ ESLint-ready (you can extend config)
 
 Generated Project Structure
 After running the command, you get:
-textmy-app/
+my-app/
 ├── config/
 │   ├── database.js
 │   ├── env.js
@@ -63,10 +62,10 @@ textmy-app/
 └── README.md
 🚀 Quick Start
 Bash# 1. Generate new backend
-npx create-express-backend@latest my-backend
+npx create-express-backend@latest my-app
 
 # 2. Enter the folder
-cd my-backend
+cd my-app
 
 # 3. Review & customize .env (especially JWT_SECRET and MONGO_URI)
 #    (MongoDB Atlas or local MongoDB recommended)
@@ -121,15 +120,3 @@ winston + morgan
 helmet · cors · dotenv
 
 Happy coding! 🚀
-
-Made with ❤️ by [your name / github username]
-textLet me know if you'd like to:
-
-- add badges (npm version, license, build status…)
-- add a license section (MIT, ISC, etc.)
-- include deployment instructions (Railway / Render / Vercel)
-- add screenshots / GIF of the generated app
-- make it shorter / more minimal
-
-Just tell me what style or additions you prefer! 😄
-```

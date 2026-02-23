@@ -8,6 +8,10 @@ const chalk = require("chalk");
 
 const args = process.argv.slice(2);
 
+/* ===============================
+   HELP COMMAND
+================================= */
+
 if (args.length === 0 || args.includes("--help") || args.includes("-h")) {
   console.log(
     chalk.cyan(`
@@ -35,6 +39,7 @@ if (!folderName || folderName === ".") {
 }
 
 const targetPath = path.join(process.cwd(), folderName);
+const templatePath = path.join(__dirname, "templates");
 
 console.log(
   chalk.blue(
@@ -49,7 +54,7 @@ const rl = readline.createInterface({
 });
 
 /* ===============================
-   SAFE EXIT HANDLER (IMPORTANT)
+   SAFE EXIT HANDLER
 ================================= */
 
 let isExiting = false;
@@ -88,6 +93,7 @@ function askQuestion(query) {
 
 async function main() {
   try {
+    // Check if folder exists
     if (await fs.pathExists(targetPath)) {
       console.log(
         chalk.yellow(`Directory ${chalk.bold(folderName)} already exists.`),
@@ -99,146 +105,33 @@ async function main() {
 
       if (answer !== "y" && answer !== "yes") {
         console.log(chalk.red("Operation cancelled."));
-        safeExit(0);
-        return;
+        return safeExit(0);
       }
 
       console.log(chalk.yellow("Removing existing directory..."));
       await fs.remove(targetPath);
     }
 
-    await fs.ensureDir(targetPath);
-    console.log(chalk.green("✓ Project folder created"));
+    console.log(chalk.green("Creating project from template..."));
 
-    const structure = [
-      "config/database.js",
-      "config/env.js",
-      "config/logger.js",
-      "controllers/users.controller.js",
-      "routes/users.routes.js",
-      "services/users.service.js",
-      "models/user.model.js",
-      "middlewares/auth.middleware.js",
-      "middlewares/error.middleware.js",
-      "middlewares/logger.middleware.js",
-      "utils/jwt.util.js",
-      "errors/BaseError.js",
-      "errors/BadRequestError.js",
-      "errors/NotFoundError.js",
-      ".env",
-      ".env.example",
-      ".gitignore",
-      "server.js",
-      "package.json",
-      "README.md",
-    ];
+    // Copy entire template folder
+    await fs.copy(templatePath, targetPath);
 
-    const packageJsonContent = {
-      name: folderName,
-      version: "1.0.0",
-      description: "Production-ready Express backend",
-      main: "server.js",
-      scripts: {
-        start: "node server.js",
-        dev: "nodemon server.js",
-      },
-      dependencies: {},
-      devDependencies: {},
-      author: "",
-      license: "ISC",
-    };
-
-    const fileContents = {
-      ".env": `PORT=5000
-MONGO_URI=mongodb://localhost:27017/${folderName}
-JWT_SECRET=your_jwt_secret_key
-`,
-      ".env.example": `PORT=5000
-MONGO_URI=mongodb://localhost:27017/${folderName}
-JWT_SECRET=your_jwt_secret_key
-`,
-      ".gitignore": `node_modules
-.env
-`,
-      "server.js": `require("dotenv").config();
-const express = require("express");
-const http = require("http");
-const cors = require("cors");
-const helmet = require("helmet");
-const morgan = require("morgan");
-const { Server } = require("socket.io");
-
-const usersRoutes = require("./routes/users.routes");
-const errorHandler = require("./middlewares/error.middleware");
-const logger = require("./config/logger");
-const { connectDB } = require("./config/database");
-
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
-
-connectDB();
-
-app.use(helmet());
-app.use(cors());
-app.use(express.json());
-app.use(morgan("combined"));
-
-app.use("/api/users", usersRoutes);
-
-app.get("/", (req, res) => res.json({ message: "Backend Running 🚀" }));
-
-app.use(errorHandler);
-
-io.on("connection", (socket) => {
-  logger.info(\`Socket connected: \${socket.id}\`);
-  socket.on("message", (msg) => io.emit("message", msg));
-  socket.on("disconnect", () => logger.info(\`Socket disconnected: \${socket.id}\`));
-});
-
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => logger.info(\`Server running on port \${PORT}\`));
-`,
-      "README.md": `# ${folderName}
-
-Production-ready Express backend.
-
-## Start
-
-npm install
-npm run dev
-`,
-    };
-
-    for (const file of structure) {
-      const fullPath = path.join(targetPath, file);
-      await fs.ensureDir(path.dirname(fullPath));
-
-      if (file === "package.json") {
-        await fs.writeJson(fullPath, packageJsonContent, { spaces: 2 });
-      } else if (file in fileContents) {
-        await fs.writeFile(fullPath, fileContents[file], "utf8");
-      } else {
-        await fs.writeFile(fullPath, "// TODO: Add production code here\n");
-      }
-    }
-
-    console.log(chalk.green("✓ All files and folders created"));
+    console.log(chalk.green("✓ Template copied successfully"));
 
     console.log(chalk.yellow("\nInstalling dependencies..."));
 
-    const installCmd =
-      "npm install express dotenv cors helmet morgan socket.io jsonwebtoken bcryptjs winston mongoose nodemon eslint --save";
-
+    // Run npm install inside new project
     await new Promise((resolve, reject) => {
-      exec(installCmd, { cwd: targetPath }, (err, stdout, stderr) => {
+      exec("npm install", { cwd: targetPath }, (err, stdout, stderr) => {
         if (err) {
           console.error(chalk.red("npm install failed:"), err.message);
-          reject(err);
-          return;
+          return reject(err);
         }
-        if (stdout) console.log(stdout.trim());
-        if (stderr) console.log(chalk.dim(stderr.trim()));
+
+        if (stdout) console.log(stdout);
+        if (stderr) console.log(chalk.dim(stderr));
+
         resolve();
       });
     });
@@ -248,10 +141,10 @@ npm run dev
     console.log(`  ${chalk.cyan("npm run dev")}`);
     console.log(`  ${chalk.cyan("npm start")}\n`);
 
-    safeExit(0);
+    return safeExit(0);
   } catch (err) {
     console.error(chalk.red("\nError occurred:"), err.message);
-    safeExit(1);
+    return safeExit(1);
   }
 }
 
