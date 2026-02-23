@@ -18,6 +18,8 @@ if (args.length === 0 || args.includes("--help") || args.includes("-h")) {
 Usage:
   npx create-express-backend <project-name>
   npx create-express-backend@latest my-api
+  npm create-express-backend <project-name>
+  npm create-express-backend@latest my-api
 
 Examples:
   npx create-express-backend my-backend

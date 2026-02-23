@@ -20,15 +20,12 @@ app.use(cors());
 app.use(express.json());
 app.use(morgan("combined"));
 
-// Routes
 app.use("/api/users", usersRoutes);
 
 app.get("/", (req, res) => res.json({ message: "Backend Running 🚀" }));
 
-// Error handler
 app.use(errorHandler);
 
-// Socket.io
 io.on("connection", (socket) => {
   logger.info(`Socket connected: ${socket.id}`);
   socket.on("message", (msg) => io.emit("message", msg));
