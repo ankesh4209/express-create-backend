@@ -9,20 +9,20 @@ with authentication, custom errors, logging, MongoDB, Socket.io support, and goo
 
 # Recommended (via npx)
 
-npx express-create-backend@latest my-app
-npx express-create-backend my-app
+npx express-create-backend@latest my-backend-app
+npx express-create-backend my-backend-app
 
 # Or if installed globally
 
-express-create-backend my-app
+express-create-backend my-backend-app
 
 # Or if running locally from your project folder
 
-node . my-app
+node . my-backend-app
 
 # or
 
-node index.js my-app
+node index.js my-backend-app
 ✨ Features
 
 MVC + Service + Utils folder structure
@@ -38,7 +38,7 @@ ESLint-ready (you can extend config)
 
 Generated Project Structure
 After running the command, you get:
-my-app/
+my-backend-app/
 ├── config/
 │ ├── database.js
 │ ├── env.js
@@ -69,11 +69,11 @@ my-app/
 └── README.md
 🚀 Quick Start
 Bash# 1. Generate new backend
-npx express-create-backend@latest my-app
+npx express-create-backend@latest my-backend-app
 
 # 2. Enter the folder
 
-cd my-app
+cd my-backend-app
 
 # 3. Review & customize .env (especially JWT_SECRET and MONGO_URI)
 
