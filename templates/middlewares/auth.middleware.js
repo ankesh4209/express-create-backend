@@ -1,22 +1,33 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.model");
+const { UnauthorizedError } = require("../errors/UnauthorizedError");
 const { NotFoundError } = require("../errors/NotFoundError");
-require("dotenv").config();
 
 const authMiddleware = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (!authHeader || !authHeader.startsWith("Bearer "))
-    return res.status(401).json({ message: "Unauthorized" });
-
-  const token = authHeader.split(" ")[1];
   try {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new UnauthorizedError("Access denied. No token provided.");
+    }
+
+    const token = authHeader.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const user = await User.findById(decoded.id).select("-password");
-    if (!user) throw new NotFoundError("User not found");
+
+    if (!user) {
+      throw new NotFoundError("User not found.");
+    }
     req.user = user;
     next();
-  } catch (err) {
-    return res.status(401).json({ message: "Invalid token" });
+  } catch (error) {
+    if (error.name === "JsonWebTokenError") {
+      return next(new UnauthorizedError("Invalid token."));
+    }
+    if (error.name === "TokenExpiredError") {
+      return next(new UnauthorizedError("Token expired."));
+    }
+    return next(error);
   }
 };
 
