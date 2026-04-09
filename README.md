@@ -1,14 +1,14 @@
-<h1 align="center">🚀 express-create-backend</h1>
+<h1>🚀 express-create-backend</h1>
 
-<h3 align="center">
+<h3>
 Scaffold a Production-Ready Express.js Backend in Seconds ⚡
 </h3>
 
-<p align="center">
+<p>
 <code>npx express-create-backend my-app</code>
 </p>
 
-<p align="center">
+<p>
 Fast • Secure • Scalable • Developer Friendly
 </p>
 
